@@ -1,319 +1,249 @@
-
-/* CSS for All */
-*{
-    margin: 0 0;
-    padding: 0 0;
-    font-family: Arial, Helvetica, sans-serif;
+/* RESET & BASE */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
 }
-.container{
-    width: 80%;
+
+body {
+    background-color: #111;
+    color: #fff;
+    overflow-x: hidden;
+}
+
+.container {
+    width: 90%;
     margin: 0 auto;
     padding: 1%;
 }
-.img-responsive{
+
+.img-responsive {
     width: 100%;
 }
-.img-curve{
+
+.img-curve {
     border-radius: 15px;
 }
 
-.text-right{
-    text-align: right;
-}
-.text-center{
+.text-center {
     text-align: center;
 }
-.text-left{
-    text-align: left;
-}
-.text-white{
-    color: white;
-}
 
-.clearfix{
+.clearfix {
     clear: both;
     float: none;
 }
 
-a{
-    color: #45637d;
-    text-decoration: none;
-}
-a:hover{
-    color: #263746;
+/* LOGO FIXA SOBRE FUNDO */
+.logo-container {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 999;
 }
 
-.btn{
-    padding: 1%;
-    border: none;
-    font-size: 1rem;
-    border-radius: 5px;
+.logo-container img {
+    height: 150px;
+    max-width: 100%;
+    filter: drop-shadow(2px 2px 4px #000);
 }
-.btn-primary{
-    background-color: #45637d;
-    color: white;
-    cursor: pointer;
-}
-.btn-primary:hover{
-    color: white;
-    background-color: #263746;
-}
-h2{
-    color: #2f3542;
-    font-size: 2rem;
-    margin-bottom: 2%;
-}
-h3{
-    font-size: 1.5rem;
-}
-.float-container{
+
+/* HERO SECTION */
+.hero-section {
+    background-image: url('../images/bg-grafite.jpg');
+    background-size: cover;
+    background-position: center;
+    padding: 120px 10px 60px;
+    text-align: center;
     position: relative;
 }
-.float-text{
-    position: absolute;
-    bottom: 50px;
-    left: 40%;
-}
-fieldset{
-    border: 1px solid white;
-    margin: 5%;
-    padding: 3%;
-    border-radius: 5px;
+
+.hero-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #fff;
+    text-shadow: 2px 2px 4px #000;
+    margin-bottom: 10px;
 }
 
-.error{
-    padding: 2%;
-    color: red;
-}
-.success{
-    padding: 2%;
-    color: green;
-}
-
-
-/* CSSS for navbar section */
-
-.logo{
-    width: 10%;
-    float: left;
-}
-.menu{
-    line-height: 60px;
-    font-size: 1.2rem;
-}
-.menu ul{
-    list-style-type: none;
+.hero-subtitle {
+    font-size: 1.05rem;
+    color: #fff;
+    font-weight: 700;
+    text-shadow: 1px 1px 3px #000;
+    line-height: 1.8;
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 10px 10px;
 }
 
-.menu ul li{
-    display: inline;
-    padding: 1%;
-    font-weight: bold;
+.hero-subtitle a {
+    color: #ffc107;
+    font-weight: 700;
+    text-decoration: none;
 }
 
-/* CSS for Food SEarch Section */
-
-.food-search{
-    background-image: url(../images/bg.jpg);
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
-    padding: 7% 0;
+.hero-subtitle a:hover {
+    text-decoration: underline;
 }
 
-.food-search input[type="search"]{
-    width: 50%;
-    padding: 1%;
-    font-size: 1rem;
-    border: none;
-    border-radius: 5px;
+.hero-subtitle i {
+    color: #ffc107;
+    margin-right: 5px;
 }
 
-
-/* CSS for Categories */
-.categories{
+/* FOOD MENU */
+.food-menu {
+    background-color: #111;
     padding: 4% 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
 }
 
-.box-3{
-    width: 28%;
-    float: left;
-    margin: 2%;
-}
-
-
-/* CSS for Food Menu */
-.food-menu{
-    background-color: #ececec;
-    padding: 4% 0;
-}
-.food-menu-box{
-    width: 43%;
-    margin: 1%;
+.food-menu-box {
+    width: 48%;
+    margin-bottom: 30px;
     padding: 2%;
-    float: left;
-    background-color: white;
+    background: linear-gradient(145deg, #1a1a1a, #222);
     border-radius: 15px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    display: flex;
+    gap: 15px;
 }
 
-.food-menu-img{
-    width: 20%;
-    float: left;
+.food-menu-img {
+    width: 25%;
 }
 
-.food-menu-desc{
-    width: 70%;
-    float: left;
-    margin-left: 8%;
+.food-menu-desc {
+    width: 75%;
 }
 
-.food-price{
+.food-price {
     font-size: 1.2rem;
     margin: 2% 0;
-}
-.food-detail{
-    font-size: 1rem;
-    color: #747d8c;
+    color: #ffc107;
+    font-weight: 600;
 }
 
-
-/* CSS for Social */
-.social ul{
-    list-style-type: none;
-}
-.social ul li{
-    display: inline;
-    padding: 1%;
+.food-detail {
+    font-size: 0.95rem;
+    color: #ccc;
 }
 
-/* for Order Section */
-.order{
-    width: 50%;
-    margin: 0 auto;
-}
-.input-responsive{
-    width: 96%;
-    padding: 1%;
-    margin-bottom: 3%;
+/* BOTÃO PADRÃO */
+.btn {
+    padding: 10px 20px;
     border: none;
-    border-radius: 5px;
     font-size: 1rem;
-}
-.order-label{
-    margin-bottom: 1%; 
+    border-radius: 5px;
+    cursor: pointer;
     font-weight: bold;
+    transition: all 0.3s ease-in-out;
+    display: inline-block;
 }
 
+.btn-yellow {
+    background-color: #ffc107;
+    color: #000;
+}
 
+.btn-yellow:hover {
+    background-color: #ffda33;
+}
 
-/* CSS for Mobile Size or Smaller Screen */
+/* CATEGORIAS */
+h3 {
+    font-size: 1.4rem;
+    color: #f1f1f1;
+    border-bottom: 2px solid #ffc107;
+    padding-bottom: 5px;
+    margin-top: 40px;
+}
 
-@media only screen and (max-width:768px){
-    .logo{
-        width: 80%;
-        float: none;
-        margin: 1% auto;
+/* BOTÃO DE CARRINHO FLUTUANTE */
+.cart-button {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    background-color: #ffc107;
+    padding: 12px 16px;
+    border-radius: 50px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    z-index: 9999;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.cart-button img {
+    width: 24px;
+    height: 24px;
+}
+
+.cart-count {
+    background-color: #000;
+    color: #fff;
+    font-weight: bold;
+    margin-left: 8px;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 14px;
+}
+
+/* RESPONSIVO */
+@media only screen and (max-width:768px) {
+    .container {
+        width: 94%;
     }
 
-    .menu ul{
+    .logo-container img {
+        height: 100px;
+    }
+
+    .food-menu {
+        display: block;
+    }
+
+    .food-menu-box {
+        width: 100%;
+    }
+
+    .food-menu-img,
+    .food-menu-desc {
+        width: 100%;
         text-align: center;
     }
 
-    .food-search input[type="search"]{
-        width: 90%;
-        padding: 2%;
-        margin-bottom: 3%;
+    .hero-title {
+        font-size: 1.4rem;
     }
 
-    .btn{
-        width: 91%;
-        padding: 2%;
+    .hero-subtitle {
+        font-size: 1rem;
+        padding: 0 8px;
     }
 
-    .food-search{
-        padding: 10% 0;
+    h2.text-center {
+        font-size: 1.2rem !important;
     }
 
-    .categories{
-        padding: 20% 0;
-    }
-    h2{
-        margin-bottom: 10%;
-    }
-    .box-3{
-        width: 100%;
-        margin: 4% auto;
+    .cart-button {
+        right: 15px;
+        bottom: 15px;
+        padding: 10px 14px;
     }
 
-    .food-menu{
-        padding: 20% 0;
-    }
-
-    .food-menu-box{
-        width: 90%;
-        padding: 5%;
-        margin-bottom: 5%;
-    }
-    .social{
-        padding: 5% 0;
-    }
-    .order{
-        width: 100%;
+    .cart-count {
+        font-size: 12px;
+        padding: 3px 6px;
     }
 }
-/* Your orders Table */
 
-.content-table {
-    border-collapse: collapse;
-    margin: 25px 0;
-    font-size: 0.9em;
-    min-width: 400px;
-    border-radius: 5px 5px 0 0;
-    overflow: hidden;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
-}
-
-.content-table thead tr {
-    background-color: #2596be;
-    color: #ffffff;
-    text-align: left;
-    font-weight: bold;
-}
-
-.content-table th,
-.content-table td {
-    padding: 12px 15px;
-}
-
-.content-table tbody tr {
-    border-bottom: 1px solid #dddddd;
-}
-
-.content-table tbody tr:nth-of-type(even) {
-    background-color: #f3f3f3;
-}
-
-.content-table tbody tr:last-of-type {
-    border-bottom: 2px solid #2596be;
-}
-
-.content-table tbody tr.active-row {
-    font-weight: bold;
-    color: #2596be;
-}
-/* Food order page css */
-.food-order{
-    background-image: url(../images/bg3.jpg);
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
-    padding: 7% 0;
-}
-
-.food-order input[type="search"]{
-    width: 50%;
-    padding: 1%;
-    font-size: 1rem;
-    border: none;
-    border-radius: 5px;
+/* RODAPÉ INVISÍVEL */
+footer, .social, .site-footer {
+    display: none !important;
 }

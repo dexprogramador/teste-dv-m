@@ -1,157 +1,84 @@
+<?php
+session_start();
+include('config/constants.php');
 
-<?php include('partials-front/menu.php'); ?>
+if (isset($_GET['food_id'])) {
+    $food_id = $_GET['food_id'];
+    $sql = "SELECT * FROM tbl_food WHERE id=$food_id";
+    $res = mysqli_query($conn, $sql);
+    $count = mysqli_num_rows($res);
 
-<?php 
-    //CHeck whether food id is set or not
-    if(isset($_GET['food_id']))
-    {
-        //Get the Food id and details of the selected food
-        $food_id = $_GET['food_id'];
-
-        //Get the DEtails of the SElected Food
-        $sql = "SELECT * FROM tbl_food WHERE id=$food_id";
-        //Execute the Query
-        $res = mysqli_query($conn, $sql);
-        //Count the rows
-        $count = mysqli_num_rows($res);
-        //CHeck whether the data is available or not
-        if($count==1)
-        {
-            //WE Have DAta
-            //GEt the Data from Database
-            $row = mysqli_fetch_assoc($res);
-
-            $title = $row['title'];
-            $price = $row['price'];
-            $image_name = $row['image_name'];
-        }
-        else
-        {
-            //Food not Availabe
-            //REdirect to Home Page
-            header('location:'.SITEURL);
-        }
+    if ($count == 1) {
+        $row = mysqli_fetch_assoc($res);
+        $title = $row['title'];
+        $price = $row['price'];
+        $description = $row['description'];
+        $image_name = $row['image_name'];
+    } else {
+        header('location: index.php');
     }
-    else
-    {
-        //Redirect to homepage
-        header('location:'.SITEURL);
-    }
+} else {
+    header('location: index.php');
+}
 ?>
 
-<!-- fOOD sEARCH Section Starts Here -->
-<section class="food-order">
-    <div class="container">        
-        <h2 class="text-center text-white">Please confirm to place order</h2>
+<!DOCTYPE html>
+<html lang="pt-br">
 
-        <form action="" method="POST" class="order">
-            <fieldset>
-                <legend style="color:white;">Selected Food</legend>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?php echo $title; ?> - BK Tabacaria</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
 
-                <div class="food-menu-img">
-                    <?php 
-                    
-                        //CHeck whether the image is available or not
-                        if($image_name=="")
-                        {
-                            //Image not Availabe
-                            echo "<div class='error'>Image not Available.</div>";
-                        }
-                        else
-                        {
-                            //Image is Available
-                            ?>
-                            <img src="<?php echo SITEURL; ?>images/food/<?php echo $image_name; ?>" alt="Chicke Hawain Pizza" class="img-responsive img-curve">
-                            <?php
-                        }
-                    
-                    ?>
-                    
-                </div>
+<body style="background: url('images/bg-grafite.jpg') no-repeat center center; background-size: cover; color: white; font-family: 'Poppins', sans-serif;">
 
-                <div class="food-menu-desc">
-                    <h3 style="color:white;"><?php echo $title; ?></h3>
-                    <input type="hidden" name="food" value="<?php echo $title; ?>">
-
-                    <p class="food-price" style="color:white;">₹<?php echo $price; ?></p>
-                    <input type="hidden" name="price" value="<?php echo $price; ?>">
-
-                    <div class="order-label" style="color:white;">Quantity</div>
-                    <input type="number" name="qty" class="input-responsive" value="1" required>
-                    
-                </div>
-
-            </fieldset>
-            
-            <fieldset>
-                <input type="submit" name="submit" value="Confirm Order" class="btn btn-primary">
-            </fieldset>
-
-        </form>
-
-        <?php 
-
-            //CHeck whether submit button is clicked or not
-            if(isset($_POST['submit']))
-            {
-                if(empty($_SESSION["u_id"]))
-{
-header('location:login.php');
-}
-else{
-  // Get all the details from the form
-
-  $food = $_POST['food'];
-  $price = $_POST['price'];
-  $qty = $_POST['qty'];
-
-  $total = $price * $qty; // total = price x qty 
-
-  $order_date = date("Y-m-d h:i:sa"); //Order DAte
-
-  $status = "Ordered";  // Ordered, On Delivery, Delivered, Cancelled
-  $u_id=$_SESSION["u_id"];
-  
-
-
-
-  //Save the Order in Databaase
-  //Create SQL to save the data
-  $sql2 = "INSERT INTO tbl_order SET 
-      food = '$food',
-      price = $price,
-      qty = $qty,
-      total = $total,
-      order_date = '$order_date',
-      status = '$status',
-      u_id='$u_id'
-       ";
-
-  //echo $sql2; die();
-
-  //Execute the Query
-  $res2 = mysqli_query($conn, $sql2);
-
-  //Check whether query executed successfully or not
-  if($res2==true)
-  {
-      //Query Executed and Order Saved
-      
-      $_SESSION['order'] = "<div class='success text-center'>Food Ordered Successfully.</div>";
-      header('location:'.SITEURL);
-  }
-  else
-  {
-      //Failed to Save Order
-      $_SESSION['order'] = "<div class='error text-center'>Failed to Order Food.</div>";
-      header('location:'.SITEURL);
-  }
-}
+    <div class="container" style="margin-top: 100px; max-width: 600px; background-color: rgba(0,0,0,0.7); padding: 20px; border-radius: 15px;">
+        <div style="text-align: center;">
+            <?php
+            if ($image_name != "") {
+                echo "<img src='images/food/$image_name' alt='$title' style='width: 100%; border-radius: 10px; margin-bottom: 15px;'>";
+            } else {
+                echo "<div class='error'>Imagem não disponível</div>";
             }
-        ?>
+            ?>
+            <h2 style="margin-bottom: 10px; font-weight: 700;"><?php echo $title; ?></h2>
+            <p style="margin-bottom: 10px; font-size: 14px; color: #ddd;"><?php echo $description; ?></p>
+            <p style="font-weight: bold; color: #ffc107; font-size: 18px;">R$ <?php echo number_format($price, 2, ',', '.'); ?></p>
 
+            <form id="cart-form">
+                <label for="qty" style="font-weight: 600;">Quantidade:</label>
+                <input type="number" id="qty" name="qty" value="1" min="1" required style="width: 60px; padding: 5px; margin: 10px;">
+                <br>
+                <button type="button" class="btn btn-yellow" onclick="addToCart(<?php echo $food_id; ?>)">Adicionar ao Carrinho</button>
+                <a href="index.php" class="btn btn" style="margin-left: 10px; background-color: #555; color: white;">Cancelar</a>
+            </form>
+        </div>
     </div>
-</section>
-<!-- fOOD sEARCH Section Ends Here -->
 
-<?php include('partials-front/footer.php'); ?>
+    <script>
+        function addToCart(foodId) {
+            const qty = parseInt(document.getElementById('qty').value);
+            let cart = JSON.parse(localStorage.getItem('bk_cart')) || [];
+
+            const existingItem = cart.find(item => item.id === foodId);
+
+            if (existingItem) {
+                existingItem.qty += qty;
+            } else {
+                cart.push({
+                    id: foodId,
+                    qty: qty
+                });
+            }
+
+            localStorage.setItem('bk_cart', JSON.stringify(cart));
+            alert('Item adicionado ao carrinho!');
+            window.location.href = 'index.php';
+        }
+    </script>
+</body>
+
+</html>
