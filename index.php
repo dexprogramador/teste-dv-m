@@ -111,10 +111,35 @@ include('config/constants.php');
     </section>
 
     <!-- BOTÃO FIXO CARRINHO -->
-    <div class="cart-button" onclick="window.location.href='order.php'">
+    <div class="cart-button" onclick="window.location.href='checkout.php'">
         <img src="images/shopping-cart.svg" alt="Carrinho">
         <span class="cart-count">0</span>
     </div>
+
+    <!-- BARRA INFORMATIVA FIXA -->
+    <div id="cart-quantity" class="cart-notification">
+        <span id="cart-items-count">Você tem 0 item(s) no carrinho</span>
+        <button onclick="window.location.href='checkout.php'">Ver Carrinho e Finalizar Pedido</button>
+    </div>
+
+    <script>
+        function updateCartUI() {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            let total = cart.reduce((sum, item) => sum + item.quantity, 0);
+
+            document.querySelector('.cart-count').innerText = total;
+            document.getElementById('cart-items-count').innerText = `Você tem ${total} item(s) no carrinho`;
+
+            if (total > 0) {
+                document.getElementById('cart-quantity').style.display = 'flex';
+            } else {
+                document.getElementById('cart-quantity').style.display = 'none';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', updateCartUI);
+    </script>
+
 </body>
 
 </html>

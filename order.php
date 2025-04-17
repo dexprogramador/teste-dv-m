@@ -1,25 +1,21 @@
 <?php
-session_start();
 include('config/constants.php');
 
-if (isset($_GET['food_id'])) {
-    $food_id = $_GET['food_id'];
-    $sql = "SELECT * FROM tbl_food WHERE id=$food_id";
-    $res = mysqli_query($conn, $sql);
-    $count = mysqli_num_rows($res);
-
-    if ($count == 1) {
-        $row = mysqli_fetch_assoc($res);
-        $title = $row['title'];
-        $price = $row['price'];
-        $description = $row['description'];
-        $image_name = $row['image_name'];
-    } else {
-        header('location: index.php');
-    }
-} else {
+if (!isset($_GET['food_id'])) {
     header('location: index.php');
+    exit;
 }
+
+$food_id = $_GET['food_id'];
+$sql = "SELECT * FROM tbl_food WHERE id=$food_id AND active='Yes'";
+$res = mysqli_query($conn, $sql);
+
+if (mysqli_num_rows($res) != 1) {
+    echo "<p style='color:white; text-align:center;'>Produto não encontrado.</p>";
+    exit;
+}
+
+$food = mysqli_fetch_assoc($res);
 ?>
 
 <!DOCTYPE html>
@@ -27,58 +23,113 @@ if (isset($_GET['food_id'])) {
 
 <head>
     <meta charset="UTF-8">
+    <title>Adicionar ao Carrinho - BK Lounge</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo $title; ?> - BK Tabacaria</title>
     <link rel="stylesheet" href="css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .order-container {
+            background: #111;
+            color: #fff;
+            min-height: 100vh;
+            padding: 30px 20px;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .order-box {
+            max-width: 500px;
+            margin: 0 auto;
+            background: linear-gradient(145deg, #1a1a1a, #222);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .order-box img {
+            width: 100%;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .order-box h2 {
+            font-size: 1.6rem;
+            margin-bottom: 10px;
+        }
+
+        .order-box p {
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            border: none;
+        }
+
+        .btn-yellow {
+            width: 100%;
+        }
+
+        .cancel-link {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            color: #fff;
+            text-decoration: underline;
+        }
+    </style>
 </head>
 
-<body style="background: url('images/bg-grafite.jpg') no-repeat center center; background-size: cover; color: white; font-family: 'Poppins', sans-serif;">
+<body>
 
-    <div class="container" style="margin-top: 100px; max-width: 600px; background-color: rgba(0,0,0,0.7); padding: 20px; border-radius: 15px;">
-        <div style="text-align: center;">
-            <?php
-            if ($image_name != "") {
-                echo "<img src='images/food/$image_name' alt='$title' style='width: 100%; border-radius: 10px; margin-bottom: 15px;'>";
-            } else {
-                echo "<div class='error'>Imagem não disponível</div>";
-            }
-            ?>
-            <h2 style="margin-bottom: 10px; font-weight: 700;"><?php echo $title; ?></h2>
-            <p style="margin-bottom: 10px; font-size: 14px; color: #ddd;"><?php echo $description; ?></p>
-            <p style="font-weight: bold; color: #ffc107; font-size: 18px;">R$ <?php echo number_format($price, 2, ',', '.'); ?></p>
+    <div class="order-container">
+        <div class="order-box">
+            <?php if ($food['image_name']) { ?>
+                <img src="images/food/<?= $food['image_name']; ?>" alt="<?= $food['title']; ?>">
+            <?php } ?>
+            <h2><?= $food['title']; ?></h2>
+            <p><?= $food['description']; ?></p>
+            <p><strong>R$ <?= number_format($food['price'], 2, ',', '.'); ?></strong></p>
 
-            <form id="cart-form">
-                <label for="qty" style="font-weight: 600;">Quantidade:</label>
-                <input type="number" id="qty" name="qty" value="1" min="1" required style="width: 60px; padding: 5px; margin: 10px;">
-                <br>
-                <button type="button" class="btn btn-yellow" onclick="addToCart(<?php echo $food_id; ?>)">Adicionar ao Carrinho</button>
-                <a href="index.php" class="btn btn" style="margin-left: 10px; background-color: #555; color: white;">Cancelar</a>
-            </form>
+            <label>Quantidade:</label>
+            <input type="number" id="qtd" min="1" value="1">
+
+            <button class="btn btn-yellow" onclick="adicionarCarrinho()">Adicionar ao Carrinho</button>
+            <a href="index.php" class="cancel-link">Cancelar</a>
         </div>
     </div>
 
     <script>
-        function addToCart(foodId) {
-            const qty = parseInt(document.getElementById('qty').value);
-            let cart = JSON.parse(localStorage.getItem('bk_cart')) || [];
+        const produto = {
+            id: <?= $food['id']; ?>,
+            title: "<?= addslashes($food['title']); ?>",
+            price: <?= $food['price']; ?>,
+            image: "<?= $food['image_name']; ?>"
+        };
 
-            const existingItem = cart.find(item => item.id === foodId);
+        function adicionarCarrinho() {
+            const qtd = parseInt(document.getElementById('qtd').value) || 1;
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
-            if (existingItem) {
-                existingItem.qty += qty;
+            const index = cart.findIndex(item => item.id === produto.id);
+            if (index !== -1) {
+                cart[index].quantity += qtd;
             } else {
                 cart.push({
-                    id: foodId,
-                    qty: qty
+                    ...produto,
+                    quantity: qtd
                 });
             }
 
-            localStorage.setItem('bk_cart', JSON.stringify(cart));
-            alert('Item adicionado ao carrinho!');
+            localStorage.setItem('cart', JSON.stringify(cart));
+
+            // Redireciona de volta para o index.php
             window.location.href = 'index.php';
         }
     </script>
+
 </body>
 
 </html>
