@@ -1,6 +1,3 @@
-<?php
-// checkout.php
-?>
 <!DOCTYPE html>
 <html lang="pt-br">
 
@@ -143,8 +140,14 @@
     <div id="product-list"></div>
     <div class="checkout-summary">Total: R$ <span id="total">0,00</span></div>
 
-    <div class="form-group"><label for="nome">Nome Completo</label><input type="text" id="nome" required></div>
-    <div class="form-group"><label for="whatsapp">WhatsApp</label><input type="tel" id="whatsapp" required></div>
+    <div class="form-group">
+      <label for="nome">Nome Completo (Obrigatório)</label>
+      <input type="text" id="nome" required>
+    </div>
+    <div class="form-group">
+      <label for="whatsapp">Telefone / WhatsApp (Obrigatório)</label>
+      <input type="tel" id="whatsapp" required>
+    </div>
 
     <div class="form-group">
       <label>Tipo do Pedido</label>
@@ -155,10 +158,22 @@
     </div>
 
     <div id="campos-endereco">
-      <div class="form-group"><label for="bairro">Bairro</label><input type="text" id="bairro"></div>
-      <div class="form-group"><label for="endereco">Endereço</label><input type="text" id="endereco"></div>
-      <div class="form-group"><label for="numero">Número</label><input type="number" id="numero"></div>
-      <div class="form-group"><label for="referencia">Referência</label><input type="text" id="referencia"></div>
+      <div class="form-group">
+        <label for="bairro">Bairro</label>
+        <input type="text" id="bairro">
+      </div>
+      <div class="form-group">
+        <label for="endereco">Endereço</label>
+        <input type="text" id="endereco">
+      </div>
+      <div class="form-group">
+        <label for="numero">Número</label>
+        <input type="number" id="numero">
+      </div>
+      <div class="form-group">
+        <label for="referencia">Referência (opcional)</label>
+        <input type="text" id="referencia">
+      </div>
     </div>
 
     <div class="form-group" id="info-retirada" style="display:none">
@@ -191,7 +206,7 @@
       <p>A chave Pix aparecerá após enviar o pedido!</p>
     </div>
 
-    <button class="btn" id="enviarBtn" onclick="enviarPedido()">Enviar Pedido</button>
+    <button class="btn" onclick="confirmarPedido()">Enviar Pedido</button>
     <button class="btn btn-secondary" onclick="window.location.href='index.php'">Voltar</button>
 
     <div class="confirmation-box" id="confirmacao">
@@ -207,14 +222,16 @@
     function renderCarrinho() {
       let total = 0;
       let html = '';
+
       cart.forEach((item, index) => {
         const subtotal = item.price * item.quantity;
         total += subtotal;
         html += `<div class="product-item">
-          <div>${item.quantity} x ${item.title}</div>
-          <div>R$ ${subtotal.toFixed(2)} <button class='remove-btn' onclick='removerItem(${index})'>Remover</button></div>
-        </div>`;
+                    <div>${item.quantity} x ${item.title}</div>
+                    <div>R$ ${subtotal.toFixed(2)} <button class='remove-btn' onclick='removerItem(${index})'>Remover</button></div>
+                  </div>`;
       });
+
       document.getElementById('product-list').innerHTML = html;
       document.getElementById('total').innerText = total.toFixed(2).replace('.', ',');
     }
@@ -225,69 +242,49 @@
       renderCarrinho();
     }
 
-    function enviarPedido() {
-      const btn = document.getElementById('enviarBtn');
-      if (btn.disabled) return;
-
+    function confirmarPedido() {
       const nome = document.getElementById('nome').value.trim();
       const whatsapp = document.getElementById('whatsapp').value.trim();
       const tipo = document.querySelector('input[name="tipo-pedido"]:checked').value;
-      const pagamento = document.querySelector('input[name="pagamento"]:checked')?.value;
+      const pagamento = document.querySelector('input[name="pagamento"]:checked');
       const bairro = document.getElementById('bairro').value.trim();
       const endereco = document.getElementById('endereco').value.trim();
       const numero = document.getElementById('numero').value.trim();
-      const referencia = document.getElementById('referencia').value.trim();
-      const troco = document.querySelector('input[name="troco"]:checked')?.value || '';
-      const valor_troco = document.getElementById('valor-troco').value;
 
-      if (!nome || !whatsapp || !pagamento || (tipo === 'Delivery' && (!bairro || !endereco || !numero))) {
-        alert('Preencha todos os campos obrigatórios.');
+      if (!nome || !whatsapp) {
+        alert("Preencha nome e WhatsApp.");
+        return;
+      }
+      if (tipo === "Delivery" && (!bairro || !endereco || !numero)) {
+        alert("Preencha todos os dados de entrega.");
+        return;
+      }
+      if (!pagamento) {
+        alert("Selecione a forma de pagamento.");
         return;
       }
 
-      btn.disabled = true;
+      let trocoMsg = '';
+      if (pagamento.value === 'Dinheiro') {
+        const opcaoTroco = document.querySelector('input[name="troco"]:checked');
+        if (!opcaoTroco) {
+          alert("Informe se precisa de troco.");
+          return;
+        }
+        if (opcaoTroco.value === 'Sim') {
+          const valor = document.getElementById('valor-troco').value;
+          if (!valor) {
+            alert("Digite o valor para troco.");
+            return;
+          }
+          trocoMsg = `Precisa de troco: Sim - R$ ${valor}`;
+        } else {
+          trocoMsg = 'Precisa de troco: Não';
+        }
+      } else if (pagamento.value === 'PIX') {
+        trocoMsg = 'CHAVE PIX: TELEFONE (65)996182692\nNOME: 59.316.766 JULIA FERREIRA LUNA\nBANCO: NUBANK\nAO ENVIAR O PIX MANDE O COMPROVANTE NO WHATSAPP (65)98143-1429';
+      }
 
-      let total = 0;
-      cart.forEach(item => {
-        total += item.price * item.quantity;
-      });
-
-      const dados = {
-        nome,
-        whatsapp,
-        tipo,
-        pagamento,
-        bairro,
-        endereco,
-        numero,
-        referencia,
-        troco,
-        valor_troco,
-        carrinho: cart,
-        total
-      };
-
-      fetch('enviar_pedido.php', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(dados)
-        })
-        .then(res => res.text())
-        .then(msg => {
-          mostrarConfirmacao(dados);
-          localStorage.removeItem('cart');
-          document.querySelectorAll('input').forEach(el => el.value = '');
-          btn.disabled = false;
-        })
-        .catch(err => {
-          alert('Erro ao enviar pedido.');
-          btn.disabled = false;
-        });
-    }
-
-    function mostrarConfirmacao(dados) {
       let resumo = `<p><strong>Produtos:</strong></p><ul>`;
       let total = 0;
       cart.forEach(item => {
@@ -295,25 +292,20 @@
         total += subtotal;
         resumo += `<li>${item.quantity} x ${item.title} - R$ ${subtotal.toFixed(2)}</li>`;
       });
+
       resumo += `</ul><p><strong>Total:</strong> R$ ${total.toFixed(2)}</p>`;
-      resumo += `<p><strong>Cliente:</strong> ${dados.nome}</p>`;
-      resumo += `<p><strong>WhatsApp:</strong> ${dados.whatsapp}</p>`;
-      resumo += `<p><strong>Tipo:</strong> ${dados.tipo}</p>`;
-      if (dados.tipo === 'Delivery') {
-        resumo += `<p><strong>Endereço:</strong> ${dados.endereco}, ${dados.numero} - ${dados.bairro}</p>`;
-        if (dados.referencia) resumo += `<p><strong>Referência:</strong> ${dados.referencia}</p>`;
+      resumo += `<p><strong>Cliente:</strong> ${nome}</p>`;
+      resumo += `<p><strong>WhatsApp:</strong> ${whatsapp}</p>`;
+      resumo += `<p><strong>Tipo:</strong> ${tipo}</p>`;
+      if (tipo === 'Delivery') {
+        resumo += `<p><strong>Endereço:</strong> ${endereco}, ${numero} - ${bairro}</p>`;
+        const ref = document.getElementById('referencia').value.trim();
+        if (ref) resumo += `<p><strong>Referência:</strong> ${ref}</p>`;
       } else {
         resumo += `<p><strong>Retirada:</strong> R. Natal, 127 - Centro - Campo Novo do Parecis - MT</p>`;
       }
-      resumo += `<p><strong>Pagamento:</strong> ${dados.pagamento}</p>`;
-      if (dados.pagamento === 'Dinheiro') {
-        resumo += `<p><strong>Troco:</strong> ${dados.troco}`;
-        if (dados.troco === 'Sim') resumo += ` - R$ ${dados.valor_troco}`;
-        resumo += `</p>`;
-      }
-      if (dados.pagamento === 'PIX') {
-        resumo += `<p>CHAVE PIX: TELEFONE (65)996182692<br>NOME: 59.316.766 JULIA FERREIRA LUNA<br>BANCO: NUBANK<br>MANDE O COMPROVANTE NO WHATSAPP (65)98143-1429</p>`;
-      }
+      resumo += `<p><strong>Pagamento:</strong> ${pagamento.value}</p>`;
+      resumo += `<p>${trocoMsg.replace(/\n/g, '<br>')}</p>`;
 
       document.getElementById('resumo-pedido').innerHTML = resumo;
       document.getElementById('confirmacao').style.display = 'block';
@@ -322,7 +314,7 @@
     function enviarWhatsApp() {
       const texto = document.getElementById('resumo-pedido').innerText;
       const link = `https://wa.me/5565981431429?text=${encodeURIComponent(texto)}`;
-      window.open(link, '_blank');
+      window.location.href = link;
     }
 
     document.querySelectorAll('input[name="pagamento"]').forEach(el => {
@@ -355,6 +347,7 @@
     });
 
     renderCarrinho();
+    document.querySelector('input[name="tipo-pedido"][value="Delivery"]').click();
   </script>
 </body>
 
