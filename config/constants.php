@@ -1,13 +1,16 @@
 <?php
-// Start Session
-session_start();
+// Só inicia a sessão se ainda não tiver sido iniciada
+if (session_status() === PHP_SESSION_NONE) {
+  session_start();
+}
 
-// Create Constants to Store Non Repeating Values
-define('SITEURL', 'http://localhost/food-order/'); // Update URL if needed
-define('LOCALHOST', 'localhost');
-define('DB_USERNAME', 'root');
-define('DB_PASSWORD', '');
-define('DB_NAME', 'food-order');
+// Proteção para não redefinir as constantes
+if (!defined('SITEURL')) define('SITEURL', 'http://localhost/food-order/');
+if (!defined('LOCALHOST')) define('LOCALHOST', 'localhost');
+if (!defined('DB_USERNAME')) define('DB_USERNAME', 'root');
+if (!defined('DB_PASSWORD')) define('DB_PASSWORD', '');
+if (!defined('DB_NAME')) define('DB_NAME', 'food-order');
 
-$conn = mysqli_connect(LOCALHOST, DB_USERNAME, DB_PASSWORD) or die(mysqli_error($conn)); // Database Connection
-$db_select = mysqli_select_db($conn, DB_NAME) or die(mysqli_error($conn)); // Selecting Database
+// Conexão com o banco
+$conn = mysqli_connect(LOCALHOST, DB_USERNAME, DB_PASSWORD) or die(mysqli_error($conn));
+$db_select = mysqli_select_db($conn, DB_NAME) or die(mysqli_error($conn));
